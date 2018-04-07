@@ -4,7 +4,7 @@ defaultEntryPoints = ["https"]
 InsecureSkipVerify = true
 
 # For secure connection on backend.local
-RootCAs = [ "./backend.cert" ]
+RootCAs = [ "/Users/alextanhongpin/Documents/architecture/traefik-grpc/backend.cert" ]
 
 [entryPoints]
   [entryPoints.http]
@@ -16,12 +16,18 @@ RootCAs = [ "./backend.cert" ]
     [entryPoints.https.tls]
      # For secure connection on frontend.local
         [[entryPoints.https.tls.certificates]]
-        certFile = "./frontend.cert"
-        keyFile  = "./frontend.key"
+        certFile = "/Users/alextanhongpin/Documents/architecture/traefik-grpc/frontend.cert"
+        keyFile  = "/Users/alextanhongpin/Documents/architecture/traefik-grpc/frontend.key"
 
 
 [web]
   address = ":8080"
+
+# [consulCatalog]
+# endpoint = "localhost:8500"
+# exposedByDefault = false # You have to manually add the tags to enable the service to be discovered
+# domain = "consul.local"
+# prefix = "traefik" # All tags have to be prefixed with traefik, e.g. traefik.enable=true
 
 [file]
 

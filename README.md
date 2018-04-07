@@ -177,3 +177,38 @@ go run server/main.go
 # Run the grpc client in another terminal
 go run client/main.go
 ```
+
+
+## NEW
+
+Setup nomad and consul:
+
+```bash
+# Sudo is required for traefik to bind to port 80
+$ sudo nomad agent -dev -data-dir=$PWD/nomad
+$ sudo consul agent -dev
+```
+
+Run nomad job:
+
+```bash
+$ nomad plan grpc.nomad
+```
+
+View the UI:
+
+![nomad](assets/nomad.png)
+![traefik](assets/traefik.png)
+
+
+Call the gRPC client multiple times - it will be load balanced across different ports:
+
+```bash
+$ ./client/client
+2018/04/07 12:52:07 got res: &echo.EchoResponse{Text:"hello world hostname: Alexs-MacBook-Pro.local port: 23919"}
+
+$ ./client/client                        
+2018/04/07 12:52:12 got res: &echo.EchoResponse{Text:"hello world hostname: Alexs-MacBook-Pro.local port: 29694"}
+```
+
+Todo: The current version doesn't listen to restart in consul configuration yet

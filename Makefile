@@ -13,3 +13,18 @@ server-cert:
 
 client-cert:
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./frontend.key -out ./frontend.cert
+
+
+status:
+	nomad status grpc
+
+alloc:
+	nomad alloc-status $1
+
+
+build: 
+	cd server && go build -o server
+	cd client && go build -o client
+
+plan:
+	nomad plan grpc.nomad

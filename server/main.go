@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -17,18 +18,20 @@ import (
 type echoServer struct{}
 
 func (s *echoServer) Echo(ctx context.Context, msg *pb.EchoRequest) (*pb.EchoResponse, error) {
+	name, _ := os.Hostname()
+	port := os.Getenv("PORT")
 	return &pb.EchoResponse{
-		Text: msg.Text,
+		Text: msg.Text + " hostname: " + name + " port: " + port,
 	}, nil
 }
 
 func main() {
-
+	port := os.Getenv("PORT")
 	//
 	// CRED
 	//
-	BackendCert, _ := ioutil.ReadFile("./backend.cert")
-	BackendKey, _ := ioutil.ReadFile("./backend.key")
+	BackendCert, _ := ioutil.ReadFile("/Users/alextanhongpin/Documents/architecture/traefik-grpc/backend.cert")
+	BackendKey, _ := ioutil.ReadFile("/Users/alextanhongpin/Documents/architecture/traefik-grpc/backend.key")
 
 	// Generate Certificate struct
 	cert, err := tls.X509KeyPair(BackendCert, BackendKey)
@@ -45,7 +48,7 @@ func main() {
 	//
 	// SERVER
 	//
-	lis, err := net.Listen("tcp", ":50051")
+	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatalf("failed to listen: %s", err.Error())
 	}
@@ -55,6 +58,6 @@ func main() {
 
 	pb.RegisterEchoServiceServer(grpcServer, &echoServer{})
 	reflection.Register(grpcServer)
-	log.Println("listening to server at port *:50051. press ctrl + c to cancel.")
+	log.Println("listening to server at port *:" + port + ". press ctrl + c to cancel.")
 	log.Fatal(grpcServer.Serve(lis))
 }
